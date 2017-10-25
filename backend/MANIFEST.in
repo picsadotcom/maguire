@@ -1,0 +1,7 @@
+# Source distribution files.
+include README.md
+include setup.py
+
+# Prune stray bytecode files.
+global-exclude *.pyc
+global-exclude __pycache__

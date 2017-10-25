@@ -1,0 +1,8 @@
+freezegun
+pytest
+pytest-cov
+pytest-django
+pytest-env
+flake8
+responses
+moto
