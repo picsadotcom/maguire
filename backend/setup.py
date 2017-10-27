@@ -34,6 +34,8 @@ setup(
         'boto3',
         'django-storages',
         'opbeat',
+        'postmarker',
+        'django-extensions',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
