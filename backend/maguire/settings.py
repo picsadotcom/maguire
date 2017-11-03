@@ -186,8 +186,8 @@ REST_FRAMEWORK = {
 
 # Celery configuration options
 
-BROKER_URL = os.environ.get('MAGUIRE_BROKER_URL',
-                            'amqp://guest:guest@localhost:5672//')
+CELERY_BROKER_URL = os.environ.get('MAGUIRE_BROKER_URL',
+                                   'amqp://guest:guest@localhost:5672//')
 
 CELERY_DEFAULT_QUEUE = 'maguire'
 CELERY_QUEUES = (
