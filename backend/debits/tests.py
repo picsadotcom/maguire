@@ -10,7 +10,7 @@ from debits.models import Debit
 from debits.providers.easydebit.provider import EasyDebitProvider
 
 
-class TestDebits(TestCase):
+class TestDebitModel(TestCase):
 
     def test_model_creation(self):
         # Setup
@@ -37,6 +37,9 @@ class TestDebits(TestCase):
 
         # Check
         self.assertEqual(Debit.objects.count(), 1)
+
+
+class TestProviderEasyDebit(TestCase):
 
     @responses.activate
     def test_load_debits_succesful(self):
