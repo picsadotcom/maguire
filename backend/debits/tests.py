@@ -32,11 +32,122 @@ class TestDebitModel(TestCase):
             provider_reference=None,
             provider_status=None,
             scheduled_at=timezone.now(),
-            loaded_at=None
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
         )
 
         # Check
         self.assertEqual(Debit.objects.count(), 1)
+
+
+class TestDebitTasks(TestCase):
+
+    @responses.activate
+    def test_t_queue_pending_01(self):
+        """Test if there are no pending debits"""
+
+        # Setup
+        from .tasks import t_queue_pending
+
+        # Execute
+        result = t_queue_pending.run()
+
+        # Check
+        self.assertEqual(result, "Queued 0 pending debit(s)")
+
+    @responses.activate
+    def test_t_queue_pending_02(self):
+        """Test if there are three pending debits - one with too many load_attempts"""
+
+        # Setup
+        from .tasks import t_queue_pending
+
+        # create debits
+        Debit.objects.create(
+            client="bobby was here",
+            downstream_reference=None,
+            callback_url=None,
+            account_name="Bobby Ninetoes",
+            account_number="123412341234",
+            branch_code="632005",
+            account_type="current",
+            status="pending",
+            amount="13500.00",
+            reference="111222111",
+            provider=None,
+            provider_reference=None,
+            provider_status=None,
+            scheduled_at=timezone.now() + timedelta(hours=48),
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
+        )
+
+        Debit.objects.create(
+            client="bobby was here",
+            downstream_reference=None,
+            callback_url=None,
+            account_name="Bobby Ninetoes",
+            account_number="123412341234",
+            branch_code="632005",
+            account_type="current",
+            status="pending",
+            amount="13500.00",
+            reference="222333222",
+            provider=None,
+            provider_reference=None,
+            provider_status=None,
+            scheduled_at=timezone.now() - timedelta(hours=48),
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
+        )
+
+        Debit.objects.create(
+            client="bobby was here",
+            downstream_reference=None,
+            callback_url=None,
+            account_name="Bobby Ninetoes",
+            account_number="123412341234",
+            branch_code="632005",
+            account_type="current",
+            status="pending",
+            amount="13500.00",
+            reference="333444333",
+            provider=None,
+            provider_reference=None,
+            provider_status=None,
+            scheduled_at=timezone.now() - timedelta(hours=48),
+            loaded_at=None,
+            load_attempts=3,
+            last_error=None
+        )
+
+        # setup response
+        xml_body = """
+            <SRP xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+                <EL>
+                    <E>
+                        <CI>222333222</CI>
+                        <CL>
+                            <C>PMT-AD-000003</C>
+                        </CL>
+                    </E>
+                </EL>
+            </SRP>
+        """
+        responses.add(
+            responses.POST,
+            'https://www.slowdebit.co.za:8888/Services/PaymentService.svc/PartnerServices/SaveOnceOffPayments',  # noqa
+            body=xml_body, status=200, content_type='application/xml'
+        )
+
+        # Execute
+        result = t_queue_pending.run()
+
+        # Check
+        self.assertEqual(result, "Queued 2 pending debit(s)")
 
 
 class TestProviderEasyDebit(TestCase):
@@ -76,7 +187,9 @@ class TestProviderEasyDebit(TestCase):
             provider_reference=None,
             provider_status=None,
             scheduled_at=timezone.now() + timedelta(hours=48),
-            loaded_at=None
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
         )
 
         # Execute
@@ -130,7 +243,9 @@ class TestProviderEasyDebit(TestCase):
             provider_reference=None,
             provider_status=None,
             scheduled_at=timezone.now() - timedelta(hours=48),
-            loaded_at=None
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
         )
 
         # Execute
@@ -184,7 +299,9 @@ class TestProviderEasyDebit(TestCase):
             provider_reference=None,
             provider_status=None,
             scheduled_at=timezone.now() + timedelta(hours=48),
-            loaded_at=None
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
         )
 
         debit2 = Debit.objects.create(
@@ -202,7 +319,9 @@ class TestProviderEasyDebit(TestCase):
             provider_reference=None,
             provider_status=None,
             scheduled_at=timezone.now() - timedelta(hours=48),
-            loaded_at=None
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
         )
 
         # Execute
