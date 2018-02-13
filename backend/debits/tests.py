@@ -1,4 +1,5 @@
 from datetime import timedelta
+from freezegun import freeze_time
 
 import responses
 
@@ -152,6 +153,7 @@ class TestDebitTasks(TestCase):
 
 class TestProviderEasyDebit(TestCase):
 
+    @freeze_time("2018-02-13 12:30:00")
     @responses.activate
     def test_load_debits_succesful(self):
         # Setup
@@ -202,7 +204,9 @@ class TestProviderEasyDebit(TestCase):
         self.assertEqual(debit.status, "loaded")
         self.assertEqual(debit.load_attempts, 1)
         self.assertEqual(debit.last_error, None)
+        self.assertEqual(debit.scheduled_at, timezone.now() + timedelta(hours=48))
 
+    @freeze_time("2018-02-13 12:30:00")
     @responses.activate
     def test_load_debits_fail_should_retry(self):
         # Setup
@@ -260,7 +264,9 @@ class TestProviderEasyDebit(TestCase):
         self.assertEqual(debit.status, "pending")
         self.assertEqual(debit.load_attempts, 2)
         self.assertEqual(debit.last_error, "PMT-AD-000003")
+        self.assertEqual(debit.scheduled_at, timezone.now() + timedelta(hours=48))
 
+    @freeze_time("2018-02-13 12:30:00")
     @responses.activate
     def test_load_debits_fail_should_not_retry(self):
         # Setup
@@ -319,7 +325,9 @@ class TestProviderEasyDebit(TestCase):
         self.assertEqual(debit.status, "failed")
         self.assertEqual(debit.load_attempts, 2)
         self.assertEqual(debit.last_error, "UNKNOWN-ERROR-CODE-01, UNKNOWN-ERROR-CODE-02")
+        self.assertEqual(debit.scheduled_at, timezone.now() - timedelta(hours=48))
 
+    @freeze_time("2018-02-13 12:30:00")
     @responses.activate
     def test_load_debits_success_and_fail(self):
         # Setup
@@ -397,8 +405,10 @@ class TestProviderEasyDebit(TestCase):
         self.assertEqual(debit1.status, "loaded")
         self.assertEqual(debit1.load_attempts, 1)
         self.assertEqual(debit1.last_error, None)
+        self.assertEqual(debit1.scheduled_at, timezone.now() + timedelta(hours=48))
 
         debit2.refresh_from_db()
         self.assertEqual(debit2.status, "pending")
         self.assertEqual(debit2.load_attempts, 2)
         self.assertEqual(debit2.last_error, "PMT-AD-000003")
+        self.assertEqual(debit2.scheduled_at, timezone.now() + timedelta(hours=48))
