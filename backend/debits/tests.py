@@ -100,8 +100,8 @@ class TestDebitTasks(TestCase):
             provider_status=None,
             scheduled_at=timezone.now() - timedelta(hours=48),
             loaded_at=None,
-            load_attempts=0,
-            last_error=None
+            load_attempts=1,
+            last_error="PMT-AD-0000001"
         )
 
         Debit.objects.create(
@@ -120,7 +120,7 @@ class TestDebitTasks(TestCase):
             provider_status=None,
             scheduled_at=timezone.now() - timedelta(hours=48),
             loaded_at=None,
-            load_attempts=3,
+            load_attempts=4,
             last_error=None
         )
 
@@ -200,9 +200,11 @@ class TestProviderEasyDebit(TestCase):
 
         debit.refresh_from_db()
         self.assertEqual(debit.status, "loaded")
+        self.assertEqual(debit.load_attempts, 1)
+        self.assertEqual(debit.last_error, None)
 
     @responses.activate
-    def test_load_debits_fail(self):
+    def test_load_debits_fail_should_retry(self):
         # Setup
         # setup easydebit provider
         provider = EasyDebitProvider()
@@ -244,8 +246,67 @@ class TestProviderEasyDebit(TestCase):
             provider_status=None,
             scheduled_at=timezone.now() - timedelta(hours=48),
             loaded_at=None,
-            load_attempts=0,
-            last_error=None
+            load_attempts=1,
+            last_error="PMT-AD-0000001"
+        )
+
+        # Execute
+        result = provider.load_debits(ids=[str(debit.id)])
+
+        # Check
+        self.assertEqual(result, "Successfully loaded 0 debits. Failed to load 1 debits.")
+
+        debit.refresh_from_db()
+        self.assertEqual(debit.status, "pending")
+        self.assertEqual(debit.load_attempts, 2)
+        self.assertEqual(debit.last_error, "PMT-AD-000003")
+
+    @responses.activate
+    def test_load_debits_fail_should_not_retry(self):
+        # Setup
+        # setup easydebit provider
+        provider = EasyDebitProvider()
+        provider.config = settings.DEBIT_CONFIG
+        provider.setup_provider()
+
+        # setup response
+        xml_body = """
+            <SRP xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+                <EL>
+                    <E>
+                        <CI>222333222</CI>
+                        <CL>
+                            <C>UNKNOWN-ERROR-CODE-01</C>
+                            <C>UNKNOWN-ERROR-CODE-02</C>
+                        </CL>
+                    </E>
+                </EL>
+            </SRP>
+        """
+        responses.add(
+            responses.POST,
+            'https://www.slowdebit.co.za:8888/Services/PaymentService.svc/PartnerServices/SaveOnceOffPayments',  # noqa
+            body=xml_body, status=200, content_type='application/xml'
+        )
+
+        debit = Debit.objects.create(
+            client="bobby was here",
+            downstream_reference=None,
+            callback_url=None,
+            account_name="Bobby Ninetoes",
+            account_number="123412341234",
+            branch_code="632005",
+            account_type="current",
+            status="pending",
+            amount="13500.00",
+            reference="222333222",
+            provider=None,
+            provider_reference=None,
+            provider_status=None,
+            scheduled_at=timezone.now() - timedelta(hours=48),
+            loaded_at=None,
+            load_attempts=1,
+            last_error="PMT-AD-0000001"
         )
 
         # Execute
@@ -256,6 +317,8 @@ class TestProviderEasyDebit(TestCase):
 
         debit.refresh_from_db()
         self.assertEqual(debit.status, "failed")
+        self.assertEqual(debit.load_attempts, 2)
+        self.assertEqual(debit.last_error, "UNKNOWN-ERROR-CODE-01, UNKNOWN-ERROR-CODE-02")
 
     @responses.activate
     def test_load_debits_success_and_fail(self):
@@ -320,8 +383,8 @@ class TestProviderEasyDebit(TestCase):
             provider_status=None,
             scheduled_at=timezone.now() - timedelta(hours=48),
             loaded_at=None,
-            load_attempts=0,
-            last_error=None
+            load_attempts=1,
+            last_error="PMT-AD-0000001"
         )
 
         # Execute
@@ -332,6 +395,10 @@ class TestProviderEasyDebit(TestCase):
 
         debit1.refresh_from_db()
         self.assertEqual(debit1.status, "loaded")
+        self.assertEqual(debit1.load_attempts, 1)
+        self.assertEqual(debit1.last_error, None)
 
         debit2.refresh_from_db()
-        self.assertEqual(debit2.status, "failed")
+        self.assertEqual(debit2.status, "pending")
+        self.assertEqual(debit2.load_attempts, 2)
+        self.assertEqual(debit2.last_error, "PMT-AD-000003")

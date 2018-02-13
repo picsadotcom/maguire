@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 import hashlib
 import requests
+from django.conf import settings
 from django.utils import timezone
 from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 from xml.dom import minidom
@@ -104,6 +107,28 @@ class EasyDebitProvider(Provider):
 
         return e_paymentitem
 
+    def _process_error_codes(self, debit, error):
+        # load error codes
+        error_codes = []
+        cl = error.find('CL')
+        for c in cl:
+            error_codes.append(c.text)
+        last_error = ", ".join(error_codes)
+
+        # basic error handling
+        if "PMT-AD-000003" in error_codes:
+            scheduled_at = timezone.now() + timedelta(
+                days=int(settings.DEBIT_LEAD_TIME))
+            status = "pending"
+        elif "PMT-AD-000004" in error_codes or "PMT-AD-000005" in error_codes:
+            scheduled_at = debit.scheduled_at + timedelta(days=1)
+            status = "pending"
+        else:
+            scheduled_at = debit.scheduled_at
+            status = "failed"
+
+        return last_error, status, scheduled_at
+
     def load_debits(self, ids):
         """
         This must be overridden to read debits from system and do the right
@@ -116,6 +141,7 @@ class EasyDebitProvider(Provider):
             se_paymentlist = SubElement(e_root, 'PL')
             for debit in debits:
                 debit.status = "processing"
+                debit.load_attempts = debit.load_attempts + 1
                 debit.save()
                 se_paymentlist.append(self._format_debit(debit))
 
@@ -138,7 +164,10 @@ class EasyDebitProvider(Provider):
                         reference=error.find('CI').text,
                         id__in=debits.values_list('id')
                     )
-                    debit.status = "failed"
+
+                    debit.last_error, debit.status, debit.scheduled_at = self._process_error_codes(
+                        debit, error)
+
                     debit.save()
                     # remove the failed debit from the debits queryset
                     debits = debits.exclude(id=debit.id)
