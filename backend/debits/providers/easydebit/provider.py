@@ -1,7 +1,7 @@
 import hashlib
 import requests
 from django.utils import timezone
-from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 from xml.dom import minidom
 
 from debits.providers.base import Provider
@@ -118,22 +118,40 @@ class EasyDebitProvider(Provider):
                 debit.status = "processing"
                 debit.save()
                 se_paymentlist.append(self._format_debit(debit))
+
             # you don't get a proper XML header without minidom, some API's hate that
             reparsed = minidom.parseString(tostring(e_root, encoding='utf-8'))
             payload = reparsed.toprettyxml(indent="  ", encoding="utf-8").decode("utf-8")
-            print(payload)
             url = self.config["base_url"] + "SaveOnceOffPayments"
-            response = requests.post(url, data=payload, headers={'Content-Type': 'application/xml'})  # noqa
-            response_parsed = minidom.parseString(response.text)
-            print(response_parsed.toprettyxml(indent="  ", encoding="utf-8").decode("utf-8"))
-            # set post process values
+            response = requests.post(
+                url, data=payload, headers={'Content-Type': 'application/xml'})
+
+            # update the debits
+            response_root = fromstring(response.text)
+
+            # process any errors
+            error_list = response_root.find('EL')
+            if(len(error_list)) > 0:
+                for error in error_list:
+                    # mark the debits as 'failed' if there are errors
+                    debit = Debit.objects.get(
+                        reference=error.find('CI').text,
+                        id__in=debits.values_list('id')
+                    )
+                    debit.status = "failed"
+                    debit.save()
+                    # remove the failed debit from the debits queryset
+                    debits = debits.exclude(id=debit.id)
+
             for debit in debits:
                 debit.provider = self.provider_name
                 debit.loaded_at = timezone.now()
                 debit.provider_reference = "TBC"
                 debit.status = "loaded"
                 debit.save()
-            return "Loaded %s debits" % (debits.count(),)
+
+            return "Successfully loaded {} debits. Failed to load {} debits.".format(
+                debits.count(), len(error_list))
         else:
             return "No debits to submit"
 

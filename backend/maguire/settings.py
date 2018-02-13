@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'rolepermissions',
     'django_celery_beat',
+    'django_extensions',
     'opbeat.contrib.django',
     # us
     'credits',
