@@ -29,13 +29,18 @@ class TQueuePending(Task):
         provider.setup_provider()
 
         tl.info(". Preparing the debits list")
-        debits = list(Debit.objects.filter(status="pending").values_list('id', flat=True))
+        debits = Debit.objects.filter(
+            status="pending",
+            load_attempts__lt=int(settings.DEBIT_LOAD_ATTEMPTS)
+        )
+
+        debits_list = list(debits.values_list('id', flat=True))
 
         tl.info(". Loading debits")
-        results = provider.load_debits(debits)
+        results = provider.load_debits(debits_list)
         tl.info(". %s" % (results,))
 
-        return "Queued pending debits"
+        return "Queued {} pending debit(s)".format(len(debits_list))
 
 
 t_queue_pending = TQueuePending()

@@ -100,6 +100,14 @@ class Debit(AppModel):
         verbose_name=_("Loaded at"),
         help_text=_("Date and time that debit was loaded to provider"),
         null=True, blank=True)
+    load_attempts = models.IntegerField(
+        default=0,
+        verbose_name=_("Load Attempts"),
+        help_text=_("Number of times maguire has attmepted to load the debit"))
+    last_error = models.TextField(
+        verbose_name=_("Last Error"),
+        help_text=_("The error message received on the last attempt to load the debit"),
+        null=True, blank=True)
     created_by = models.ForeignKey(
         User, related_name='debits_created', null=True, blank=True,
         on_delete=models.CASCADE)
@@ -133,6 +141,8 @@ class Debit(AppModel):
             'provider_status': self.provider_status,
             'scheduled_at': self.scheduled_at.isoformat() if self.loaded_at else None,
             'loaded_at': self.loaded_at.isoformat() if self.loaded_at else None,
+            'load_attempts': self.load_attempts,
+            'last_error': self.last_error,
             'created_at': self.created_at.isoformat(),
             'created_by': self.created_by.id if self.created_by else None,
             'updated_at': self.updated_at.isoformat(),
@@ -142,9 +152,6 @@ class Debit(AppModel):
     def save(self, *args, **kwargs):
         if self.reference is None:
             self.reference = generate_unique_debit_reference(length=9)
-
-        # WARNING - Save takes place here!
-        # Save the model
         super(Debit, self).save(*args, **kwargs)
 
     def __str__(self):
