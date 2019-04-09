@@ -5,7 +5,6 @@ from graphene.types.datetime import DateTime
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from django_filters import OrderingFilter
-from rolepermissions.verifications import has_object_permission, has_permission
 
 from .models import Debit
 from maguire.utils import (uuid_from_b64, schema_get_mutation_data, schema_update_model,
@@ -43,8 +42,7 @@ class DebitNode(DjangoObjectType, TotalCountMixin):
         except cls._meta.model.DoesNotExist:
             return cls._meta.model.objects.none()
         if context is not None:
-            if context.user.is_authenticated and (
-                    has_object_permission('access_debit', context.user, node)):
+            if context.user.is_authenticated:
                 return node
             else:
                 return cls._meta.model.objects.none()
@@ -122,9 +120,7 @@ class Query(AbstractType):
     def resolve_debits(self, args, context, info):
         # context will reference to the Django request
         if context is not None:
-            if context.user.is_authenticated and (
-                    has_permission(context.user, 'list_all') or
-                    has_permission(context.user, 'list_debits')):
+            if context.user.is_authenticated:
                 return DebitFilter(args, queryset=Debit.objects.all()).qs
             else:
                 return Debit.objects.none()
