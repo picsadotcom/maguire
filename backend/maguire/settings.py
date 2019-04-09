@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'rolepermissions',
     'django_celery_beat',
     'django_extensions',
-    'opbeat.contrib.django',
     # us
     'credits',
     'debits',
@@ -72,7 +71,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'reversion.middleware.RevisionMiddleware',
-    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
 ]
 
 ROOT_URLCONF = 'maguire.urls'
@@ -240,12 +238,6 @@ AWS_DEFAULT_ACL = 'private'
 AWS_S3_ENCRYPTION = True
 
 BASE_URL = os.environ.get('BASE_URL', 'REPLACEME')
-
-OPBEAT = {
-    'ORGANIZATION_ID': os.environ.get('OPBEAT_ORGANIZATION_ID', 'REPLACEME'),
-    'APP_ID': os.environ.get('OPBEAT_APP_ID', 'REPLACEME'),
-    'SECRET_TOKEN': os.environ.get('OPBEAT_SECRET_TOKEN', 'REPLACEME'),
-}
 
 # These tokens are used when hitting callback URLs to secure them
 CALLBACK_TOKEN_DEBITS = os.environ.get('CALLBACK_TOKEN_DEBIT', None)

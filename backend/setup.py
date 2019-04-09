@@ -33,7 +33,6 @@ setup(
         'django-celery-beat',
         'boto3',
         'django-storages',
-        'opbeat',
         'postmarker',
         'django-extensions',
     ],
