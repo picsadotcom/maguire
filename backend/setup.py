@@ -14,7 +14,7 @@ setup(
         'djangorestframework',
         'django-rest-auth',
         'dj-database-url',
-        'psycopg2',
+        'psycopg2-binary',
         'raven',
         'gunicorn',
         'django-filter',
