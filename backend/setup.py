@@ -29,7 +29,7 @@ setup(
         'graphene-django',
         'graphql-core',
         'pendulum',
-        'django-role-permissions==1.2.1',
+        'django-role-permissions',
         'django-celery-beat',
         'boto3',
         'django-storages',
