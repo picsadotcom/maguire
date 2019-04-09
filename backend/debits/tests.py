@@ -6,12 +6,41 @@ import responses
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
+from django.contrib.auth.models import User
+from rest_framework.test import APIClient
+from rest_framework.authtoken.models import Token
 
 from debits.models import Debit
+from maguire.schema import schema
 from debits.providers.easydebit.provider import EasyDebitProvider
 
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+
+def make_user(username="testuser", password="testpass", email="testuser@example.com",
+              role=None):
+    """
+    Helper function to create a new User
+    """
+    user = User.objects.create_user(username, email, password)
+    return user
 
 class TestDebitModel(TestCase):
+
+    def _url_string(self, string='/graphql', **url_params):
+        if url_params:
+            string += '?' + urlencode(url_params)
+        return string
+
+    def setUp(self):
+        super(TestCase, self).setUp()
+        self.adm_client = APIClient()
+        self.adm_user = make_user(username="testadm", password="testpass",
+                                  email="testadm@example.com", role="admin")
+        adm_token = Token.objects.create(user=self.adm_user)
+        self.adm_client.credentials(HTTP_AUTHORIZATION='Token ' + adm_token.key)
 
     def test_model_creation(self):
         # Setup
@@ -40,6 +69,144 @@ class TestDebitModel(TestCase):
 
         # Check
         self.assertEqual(Debit.objects.count(), 1)
+
+    @freeze_time("2016-10-30 12:00:01")
+    def test_debit_graphql(self):
+        # Setup
+        debit = Debit.objects.create(
+            client="bobby was here",
+            downstream_reference=None,
+            callback_url=None,
+            account_name="Bobby Ninetoes",
+            account_number="123412341234",
+            branch_code="632005",
+            account_type="current",
+            status="pending",
+            amount="1113500.00",
+            reference="123456789",
+            provider=None,
+            provider_reference=None,
+            provider_status=None,
+            scheduled_at=timezone.now(),
+            loaded_at=None,
+            load_attempts=0,
+            last_error=None
+        )
+
+        query = '''
+            query GetDebit {
+                debit(id: "%s") {
+                    client
+                    downstreamReference
+                    callbackUrl
+                    accountName
+                    accountNumber
+                    branchCode
+                    accountType
+                    status
+                    amount
+                    reference
+                    provider
+                    providerReference
+                    providerStatus
+                    scheduledAt
+                    loadedAt
+                    loadAttempts
+                    lastError
+                }
+            }
+        ''' % debit.node_id
+        # Execute
+        result = schema.execute(query)
+        # Check
+        self.assertEqual(result.errors, None)
+        rd = result.data['debit']
+        self.assertEqual(rd['client'], "bobby was here")
+        self.assertEqual(rd['downstreamReference'], None)
+        self.assertEqual(rd['callbackUrl'], None)
+        self.assertEqual(rd['accountName'], 'Bobby Ninetoes')
+        self.assertEqual(rd['accountNumber'], '123412341234')
+        self.assertEqual(rd['branchCode'], '632005')
+        self.assertEqual(rd['accountType'], 'CURRENT')
+        self.assertEqual(rd['status'], 'PENDING')
+        self.assertEqual(rd['amount'], 1113500.0)
+        self.assertEqual(rd['reference'], '123456789')
+        self.assertEqual(rd['provider'], None)
+        self.assertEqual(rd['providerReference'], None)
+        self.assertEqual(rd['providerStatus'], None)
+        self.assertEqual(rd['scheduledAt'], '2016-10-30T12:00:01+00:00')
+        self.assertEqual(rd['loadedAt'], None)
+        self.assertEqual(rd['loadAttempts'], 0)
+        self.assertEqual(rd['lastError'], None)
+
+    @freeze_time("2016-10-30 12:00:01")
+    def test_debit_mutation_add_http(self):
+        # Setup
+        debit_count = Debit.objects.count()
+
+        mutation = '''
+            mutation MutateDebit {
+                debitMutate(
+                    input: {
+                        client: "remote submittor",
+                        accountName: "Remote",
+                        accountNumber: "5432154321",
+                        branchCode: "632001",
+                        accountType: "current",
+                        amount: "100000.10",
+                        scheduledAt: "2016-11-30T12:00:01+00:00"
+                    }
+                ) {
+                    debit {
+                        id
+                        client
+                        downstreamReference
+                        callbackUrl
+                        accountName
+                        accountNumber
+                        branchCode
+                        accountType
+                        status
+                        amount
+                        reference
+                        provider
+                        providerReference
+                        providerStatus
+                        scheduledAt
+                        loadedAt
+                        loadAttempts
+                        lastError
+                    }
+                }
+            }
+        '''
+        # Execute
+        result = self.adm_client.post(self._url_string(query=mutation))
+
+        # Check
+        # . check for errors
+        self.assertEqual(result.status_code, 200)
+        # . check object has been created
+        self.assertEqual(Debit.objects.count(), debit_count + 1)
+        # . check returned data
+        rd = result.json()["data"]["debitMutate"]["debit"]
+        self.assertEqual(rd['client'], "remote submittor")
+        self.assertEqual(rd['downstreamReference'], None)
+        self.assertEqual(rd['callbackUrl'], None)
+        self.assertEqual(rd['accountName'], 'Remote')
+        self.assertEqual(rd['accountNumber'], '5432154321')
+        self.assertEqual(rd['branchCode'], '632001')
+        self.assertEqual(rd['accountType'], 'CURRENT')
+        self.assertEqual(rd['status'], 'PENDING')
+        self.assertEqual(rd['amount'], 100000.1)
+        self.assertNotEqual(rd['reference'], None)
+        self.assertEqual(rd['provider'], None)
+        self.assertEqual(rd['providerReference'], None)
+        self.assertEqual(rd['providerStatus'], None)
+        self.assertEqual(rd['scheduledAt'], '2016-11-30T12:00:01+00:00')
+        self.assertEqual(rd['loadedAt'], None)
+        self.assertEqual(rd['loadAttempts'], 0)
+        self.assertEqual(rd['lastError'], None)
 
 
 class TestDebitTasks(TestCase):

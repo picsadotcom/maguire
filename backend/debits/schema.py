@@ -35,14 +35,14 @@ class DebitNode(DjangoObjectType, TotalCountMixin):
         interfaces = (relay.Node, )
 
     @classmethod
-    def get_node(cls, id, context, info):
+    def get_node(cls, info, id):
         # HTTP request
         try:
             node = cls._meta.model.objects.get(id=id)
         except cls._meta.model.DoesNotExist:
             return cls._meta.model.objects.none()
-        if context is not None:
-            if context.user.is_authenticated:
+        if info.context is not None:
+            if info.context.user.is_authenticated:
                 return node
             else:
                 return cls._meta.model.objects.none()
@@ -79,7 +79,7 @@ class DebitMutation(relay.ClientIDMutation):
     debit = Field(DebitNode)
 
     @classmethod
-    def mutate_and_get_payload(cls, input, context, info):
+    def mutate_and_get_payload(cls, root, info, **input):
         fk_fields = ["updated_by"]
         non_fk_fields = ["client", "downstream_reference", "callback_url",
                          "account_name", "account_number", "branch_code",
@@ -93,19 +93,19 @@ class DebitMutation(relay.ClientIDMutation):
                 return DebitMutation(debit=None)
 
             # Gather mutation data
-            mutation_data = schema_get_mutation_data(fk_fields, non_fk_fields, input, context,
+            mutation_data = schema_get_mutation_data(fk_fields, non_fk_fields, input, info.context,
                                                      update=True)
             # Update the model
             event_data = schema_update_model(debit, mutation_data, fk_fields)
             # Define the user
-            user = schema_define_user(context, "debit_schema")
+            user = schema_define_user(info.context, "debit_schema")
             # Create a model.updated Event
             source_model = ContentType.objects.get(app_label='debits', model='debit')
             schema_create_updated_event(source_model, id, event_data, user)
 
         else:  # create new
             # Gather mutation data
-            mutation_data = schema_get_mutation_data(fk_fields, non_fk_fields, input, context,
+            mutation_data = schema_get_mutation_data(fk_fields, non_fk_fields, input, info.context,
                                                      update=False)
             # Create the model
             debit = Debit.objects.create(**mutation_data)
