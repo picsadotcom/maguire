@@ -68,7 +68,7 @@ class Debit(AppModel):
         choices=STATUS_CHOICES, max_length=30,
         default="pending")
     amount = models.DecimalField(
-        max_digits=7, decimal_places=2)
+        max_digits=10, decimal_places=2)
     reference = models.CharField(
         null=True, blank=True,
         max_length=9,

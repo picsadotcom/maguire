@@ -27,7 +27,7 @@ class TestDebitModel(TestCase):
             branch_code="632005",
             account_type="current",
             status="pending",
-            amount="13500.00",
+            amount="1113500.00",
             reference="123456789",
             provider=None,
             provider_reference=None,
