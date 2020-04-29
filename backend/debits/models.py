@@ -41,7 +41,9 @@ class Debit(AppModel):
     downstream_reference = models.CharField(
         max_length=50,
         verbose_name=_("Reference"),
-        help_text=_("Payment reference (UUID, number, reference, etc.) from your system"),
+        unique=True,
+        help_text=_("Payment reference (UUID, number, reference, etc.) from your system"
+                    "This must either be None or should be unique to prevent duplication"),
         null=True, blank=True
     )
     callback_url = models.CharField(

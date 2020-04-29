@@ -19,6 +19,7 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
+
 def make_user(username="testuser", password="testpass", email="testuser@example.com",
               role=None):
     """
@@ -26,6 +27,7 @@ def make_user(username="testuser", password="testpass", email="testuser@example.
     """
     user = User.objects.create_user(username, email, password)
     return user
+
 
 class TestDebitModel(TestCase):
 
@@ -45,30 +47,38 @@ class TestDebitModel(TestCase):
     def test_model_creation(self):
         # Setup
         self.assertEqual(Debit.objects.count(), 0)
+        debit_data = {
+            "client": "bobby was here",
+            "downstream_reference": None,
+            "callback_url": None,
+            "account_name": "Bobby Ninetoes",
+            "account_number": "123412341234",
+            "branch_code": "632005",
+            "account_type": "current",
+            "status": "pending",
+            "amount": "1113500.00",
+            "reference": "123456789",
+            "provider": None,
+            "provider_reference": None,
+            "provider_status": None,
+            "scheduled_at": timezone.now(),
+            "loaded_at": None,
+            "load_attempts": 0,
+            "last_error": None
+        }
 
         # Execute
-        Debit.objects.create(
-            client="bobby was here",
-            downstream_reference=None,
-            callback_url=None,
-            account_name="Bobby Ninetoes",
-            account_number="123412341234",
-            branch_code="632005",
-            account_type="current",
-            status="pending",
-            amount="1113500.00",
-            reference="123456789",
-            provider=None,
-            provider_reference=None,
-            provider_status=None,
-            scheduled_at=timezone.now(),
-            loaded_at=None,
-            load_attempts=0,
-            last_error=None
-        )
+        Debit.objects.create(**debit_data)
 
         # Check
         self.assertEqual(Debit.objects.count(), 1)
+
+        # Check combining unique=True and null=True on downstream_reference
+        # Execute again
+        Debit.objects.create(**debit_data)
+
+        # Check again
+        self.assertEqual(Debit.objects.count(), 2)
 
     @freeze_time("2016-10-30 12:00:01")
     def test_debit_graphql(self):
