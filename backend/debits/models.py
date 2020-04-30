@@ -42,7 +42,7 @@ class Debit(AppModel):
         max_length=50,
         verbose_name=_("Reference"),
         unique=True,
-        help_text=_("Payment reference (UUID, number, reference, etc.) from your system"
+        help_text=_("Payment reference (UUID, number, reference, etc.) from your system. "
                     "This must either be None or should be unique to prevent duplication"),
         null=True, blank=True
     )

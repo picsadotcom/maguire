@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='debit',
             name='downstream_reference',
-            field=models.CharField(blank=True, help_text='Payment reference (UUID, number, reference, etc.) from your systemThis must either be None or should be unique to prevent duplication', max_length=50, null=True, unique=True, verbose_name='Reference'),
+            field=models.CharField(blank=True, help_text='Payment reference (UUID, number, reference, etc.) from your system. This must either be None or should be unique to prevent duplication', max_length=50, null=True, unique=True, verbose_name='Reference'),
         ),
     ]
