@@ -25,9 +25,13 @@ setup(
         'python-dateutil',
         'django-cors-middleware',
         'django-reversion',
-        'graphene',
-        'graphene-django',
-        'graphql-core',
+        # https://github.com/graphql-python/graphene/releases
+        'graphene==2.1.3',
+        # https://github.com/graphql-python/graphene-django/releases
+        'graphene-django==2.2.0',
+        # https://github.com/graphql-python/graphql-core/releases
+        'graphql-core==2.1',
+        'graphql-relay<0.5',
         'pendulum',
         'django-role-permissions',
         'django-celery-beat',
