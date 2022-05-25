@@ -1,6 +1,5 @@
 import reversion
 
-from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -15,7 +14,6 @@ from events.models import Event
 
 
 @reversion.register()
-@python_2_unicode_compatible
 class Debit(AppModel):
     """
     Debit Model

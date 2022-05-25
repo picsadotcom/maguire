@@ -2,9 +2,10 @@ import importlib
 
 from django.conf import settings
 
-from celery.task import Task
+from celery import Task
 from celery.utils.log import get_task_logger
 
+from maguire.celery import app
 from .models import Debit
 
 
@@ -43,4 +44,5 @@ class TQueuePending(Task):
         return "Queued {} pending debit(s)".format(len(debits_list))
 
 
+app.register_task(TQueuePending)
 t_queue_pending = TQueuePending()

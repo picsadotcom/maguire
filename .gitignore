@@ -2,6 +2,10 @@
 .cache/
 __pycache__/
 
+# env
+.envrc
+.python-version
+
 # C extensions
 *.so
 

@@ -1,18 +1,15 @@
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
-from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from maguire.models import AppModel
 
 
-@python_2_unicode_compatible
 class Event(AppModel):
 
     """
@@ -31,7 +28,7 @@ class Event(AppModel):
         verbose_name=_("Event Type"), max_length=60,
         help_text=_("e.g. client_terminated / client_suspended / "
                     "savings_adjustment"))
-    event_data = JSONField(
+    event_data = models.JSONField(
         verbose_name=_("Event Data"),
         blank=True, default=dict,
         help_text=_(

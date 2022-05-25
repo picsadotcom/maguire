@@ -1,4 +1,4 @@
-FROM praekeltfoundation/django-bootstrap:py3.6-jessie
+FROM praekeltfoundation/django-bootstrap:py3.8-buster
 
 COPY . /app
 RUN pip install -e .

@@ -3,6 +3,7 @@ pytest
 pytest-cov
 pytest-django
 pytest-env
+pytest-xdist
 flake8
 responses
 moto
