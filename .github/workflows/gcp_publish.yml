@@ -11,7 +11,7 @@ env:
   GITHUB_SHA: ${{ github.sha }}
   IMAGE: maguire-backend
   REGISTRY_HOSTNAME: eu.gcr.io
-  DEPLOYMENT_NAME: gke-maguire
+  DEPLOYMENT_NAME: gke-test
 
 jobs:
   setup-build-publish:
