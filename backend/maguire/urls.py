@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^graphql', graphql_token_view()),
-    url(r'^graphiql', staff_member_required(csrf_exempt(GraphQLView.as_view(schema=schema, graphiql=True)))),
+    url(r'^graphiql', staff_member_required(csrf_exempt(
+        GraphQLView.as_view(schema=schema, graphiql=True)))),
     url(r'^api/rest-auth/', include('rest_auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

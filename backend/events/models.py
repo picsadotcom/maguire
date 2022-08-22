@@ -79,6 +79,6 @@ def event_post_save(sender, instance, created, **kwargs):
             try:
                 getattr(tasks, instance.event_type.replace(".", "_")
                         ).apply_async(kwargs={"event_id": instance.id})
-            except:
+            except Exception:
                 pass
         transaction.on_commit(run_task_event_type)

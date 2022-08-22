@@ -8,7 +8,7 @@ class DebitBatchCompleted(Task):
     """
     """
     name = "maguire.events.tasks.debit_batch_completed"
-    l = get_task_logger(__name__)
+    tl = get_task_logger(__name__)
 
     def run(self, event_id, **kwargs):
         # trigger hook
