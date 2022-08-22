@@ -135,7 +135,7 @@ class EasyDebitProvider(Provider):
         thing with them.
         """
         debits = Debit.objects.filter(id__in=ids)
-        if debits.count() is not 0:
+        if debits.count() != 0:
             e_root = Element('SRQ')
             e_root.append(self._auth_header())
             se_paymentlist = SubElement(e_root, 'PL')
