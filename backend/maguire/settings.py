@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
+    'dj_rest_auth',
     'django_filters',
     'corsheaders',
     'reversion',
@@ -132,8 +132,6 @@ LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 

@@ -1,4 +1,6 @@
-name: Build and Deploy to GKE (Google Kubernetes Engine)
+# This workflow will build a docker container and publish it to Google Container Registry
+
+name: Production build and publish
 
 on:
   push:
@@ -6,43 +8,35 @@ on:
     - master
 
 env:
-  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
-  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
-  GITHUB_SHA: ${{ github.sha }}
-  IMAGE: maguire-backend
   REGISTRY_HOSTNAME: eu.gcr.io
-  DEPLOYMENT_NAME: gke-test
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GITHUB_SHA: ${{ github.sha }}
 
 jobs:
-  setup-build-publish:
-    name: Setup, Build, Publish
+  backend:
+    name: build and publish backend
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0
-      with:
-        version: '270.0.0'
-        service_account_email: ${{ secrets.GKE_EMAIL }}
-        service_account_key: ${{ secrets.GKE_KEY }}
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GKE_KEY }}
 
-    # Configure docker to use the gcloud command-line tool as a credential helper
-    - run: |
-        # Set up docker to authenticate
-        # via gcloud command-line tool.
-        gcloud auth configure-docker
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
-    # Build the Docker image
-    - name: Build Maguire Backend
-      run: |
-        docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"$GITHUB_SHA" \
-          --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" backend
+      - name: Setup docker gcloud auth
+        run: |
+          # configure docker to authenticate via gcloud command-line tool
+          gcloud auth configure-docker
 
-    # Push the Docker image to Google Container Registry
-    - name: Publish Maguire Backend
-      run: |
-        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
+      - name: Build backend docker image
+        run: |
+          docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/maguire-backend:"$GITHUB_SHA" backend
+
+      - name: Publish backend docker image
+        run: |
+          docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/maguire-backend:$GITHUB_SHA

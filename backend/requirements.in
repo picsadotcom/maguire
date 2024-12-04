@@ -1,0 +1,37 @@
+# Django
+# https://www.djangoproject.com/download
+Django<5
+
+# Django related
+django-cors-headers
+django-filter
+django-extensions
+django-reversion
+django-role-permissions
+django-storages
+djangorestframework
+dj-database-url
+dj-rest-auth
+
+psycopg[binary]
+
+# Sentry
+raven
+
+# Celery
+celery
+django-celery-beat
+
+# Date handling
+python-dateutil
+pendulum
+
+# GraphQL
+graphene-django
+
+# AWS
+boto3
+
+# Other
+ipython
+pprintpp==0.4.0  # pinned for security

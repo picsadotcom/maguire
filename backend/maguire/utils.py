@@ -9,9 +9,10 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
+from rolepermissions.checkers import has_object_permission
+
 import boto3
 from botocore.client import Config
-
 
 from graphene import relay, Int, ObjectType
 
@@ -92,6 +93,28 @@ def parse_schema_fk_fields(mutation_data, fk_fields, input):
         #     mutation_data['modelname'] = modelname
 
     return mutation_data
+
+
+def get_node_with_permission(cls, id, context, access_param=None):
+    # HTTP request
+    try:
+        node = cls._meta.model.objects.get(id=id)
+    except cls._meta.model.DoesNotExist:
+        return cls._meta.model.objects.none()
+    if context is not None:
+        if access_param:
+            if context.user.is_authenticated and has_object_permission(
+              access_param, context.user, node):
+                return node
+            else:
+                return cls._meta.model.objects.none()
+        else:
+            if context.user.is_authenticated:
+                return node
+            else:
+                return cls._meta.model.objects.none()
+    else:  # Not a HTTP request - no permissions testing currently
+        return node
 
 
 def schema_get_mutation_data(fk_fields, non_fk_fields, input, context, update):

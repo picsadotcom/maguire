@@ -1,59 +1,40 @@
 import django_filters
 from graphql import GraphQLError
-from graphene import relay, AbstractType, String, Field, Int
+from graphene import relay, String, Field, Int
 from graphene.types.datetime import DateTime
 from graphene.types.json import JSONString
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from django_filters import OrderingFilter
-from rolepermissions.verifications import has_object_permission, has_permission
+from rolepermissions.verifications import has_permission
 
 from .models import Event
 
-from maguire.utils import (schema_get_mutation_data)
-
-
-# Graphene will automatically map the Event model's fields onto the EventNode.
-# This is configured in the EventNode's Meta class (as you can see below)
-
-EVENT_FILTERS = {
-    'source_model': ['exact'],
-    'source_id': ['exact'],
-    'event_type': ['exact'],
-}
-
-
-class EventNode(DjangoObjectType):
-    class Meta:
-        model = Event
-        # Allow for some more advanced filtering here
-        filter_fields = EVENT_FILTERS
-        interfaces = (relay.Node, )
-
-    @classmethod
-    def get_node(cls, id, context, info):
-        # HTTP request
-        try:
-            node = cls._meta.model.objects.get(id=id)
-        except cls._meta.model.DoesNotExist:
-            return cls._meta.model.objects.none()
-        if context is not None:
-            if context.user.is_authenticated and (
-                    has_object_permission('access_event', context.user, node)):
-                return node
-            else:
-                return cls._meta.model.objects.none()
-        else:  # Not a HTTP request - no permissions testing currently
-            return node
+from maguire.utils import get_node_with_permission, schema_get_mutation_data
 
 
 class EventFilter(django_filters.FilterSet):
 
     class Meta:
         model = Event
-        fields = EVENT_FILTERS
+        fields = {
+            'source_model': ['exact'],
+            'source_id': ['exact'],
+            'event_type': ['exact'],
+        }
 
     order_by = OrderingFilter(fields=['created_at'])
+
+
+class EventNode(DjangoObjectType):
+    class Meta:
+        model = Event
+        filterset_class = EventFilter
+        interfaces = (relay.Node, )
+
+    @classmethod
+    def get_node(cls, info, id):
+        return get_node_with_permission(cls, id, info.context, 'access_event')
 
 
 class EventMutation(relay.ClientIDMutation):
@@ -84,17 +65,15 @@ class EventMutation(relay.ClientIDMutation):
         return EventMutation(event=event)
 
 
-class Query(AbstractType):
+class Query(object):
     event = relay.Node.Field(EventNode)
-    events = DjangoFilterConnectionField(EventNode,
-                                         filterset_class=EventFilter)
+    events = DjangoFilterConnectionField(EventNode)
 
-    def resolve_events(self, args, context, info):
-        # context will reference to the Django request
-        if context is not None:
-            if context.user.is_authenticated and (
-                    has_permission(context.user, 'list_all') or
-                    has_permission(context.user, 'list_events')):
+    def resolve_events(self, info, **args):
+        if info.context is not None:
+            if info.context.user.is_authenticated and (
+                    has_permission(info.context.user, 'list_all') or
+                    has_permission(info.context.user, 'list_events')):
                 return EventFilter(args, queryset=Event.objects.all()).qs
             else:
                 return Event.objects.none()
@@ -102,5 +81,5 @@ class Query(AbstractType):
             return EventFilter(args, queryset=Event.objects.all()).qs
 
 
-class Mutation(AbstractType):
+class Mutation(object):
     event_mutate = EventMutation.Field()

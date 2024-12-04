@@ -1,0 +1,11 @@
+pytest
+pytest-cov
+pytest-django
+pytest-env
+pytest-instafail
+pytest-xdist
+flake8
+responses
+moto
+freezegun
+urllib3
