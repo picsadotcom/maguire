@@ -40,7 +40,7 @@ dj-database-url==2.3.0
     # via -r requirements.in
 dj-rest-auth==7.0.0
     # via -r requirements.in
-django==4.2.16
+django==4.2.17
     # via
     #   -r requirements.in
     #   dj-database-url
@@ -75,8 +75,6 @@ djangorestframework==3.15.2
     # via
     #   -r requirements.in
     #   dj-rest-auth
-exceptiongroup==1.2.2
-    # via ipython
 executing==2.1.0
     # via stack-data
 graphene==3.4.3
@@ -118,7 +116,7 @@ prompt-toolkit==3.0.48
     # via
     #   click-repl
     #   ipython
-psycopg==3.2.3
+psycopg[binary]==3.2.3
     # via -r requirements.in
 psycopg-binary==3.2.3
     # via psycopg
@@ -161,10 +159,8 @@ traitlets==5.14.3
     #   matplotlib-inline
 typing-extensions==4.12.2
     # via
-    #   asgiref
     #   dj-database-url
     #   graphene
-    #   ipython
     #   psycopg
 tzdata==2024.2
     # via
