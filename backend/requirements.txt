@@ -10,9 +10,9 @@ asttokens==3.0.0
     # via stack-data
 billiard==4.2.1
     # via celery
-boto3==1.35.74
+boto3==1.35.76
     # via -r requirements.in
-botocore==1.35.74
+botocore==1.35.76
     # via
     #   boto3
     #   s3transfer
@@ -40,7 +40,7 @@ dj-database-url==2.3.0
     # via -r requirements.in
 dj-rest-auth==7.0.0
     # via -r requirements.in
-django==4.2.16
+django==4.2.17
     # via
     #   -r requirements.in
     #   dj-database-url
@@ -143,7 +143,7 @@ raven==6.10.0
     # via -r requirements.in
 s3transfer==0.10.4
     # via boto3
-six==1.16.0
+six==1.17.0
     # via
     #   promise
     #   python-dateutil
