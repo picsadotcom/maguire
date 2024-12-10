@@ -10,9 +10,9 @@ asttokens==3.0.0
     # via stack-data
 billiard==4.2.1
     # via celery
-boto3==1.35.76
+boto3==1.35.77
     # via -r requirements.in
-botocore==1.35.76
+botocore==1.35.77
     # via
     #   boto3
     #   s3transfer
@@ -20,6 +20,10 @@ celery==5.4.0
     # via
     #   -r requirements.in
     #   django-celery-beat
+certifi==2024.8.30
+    # via requests
+charset-normalizer==3.4.0
+    # via requests
 click==8.1.7
     # via
     #   celery
@@ -92,6 +96,8 @@ graphql-relay==3.2.0
     # via
     #   graphene
     #   graphene-django
+idna==3.10
+    # via requests
 ipython==8.30.0
     # via -r requirements.in
 jedi==0.19.2
@@ -141,13 +147,15 @@ python-dateutil==2.9.0.post0
     #   time-machine
 raven==6.10.0
     # via -r requirements.in
+requests==2.32.3
+    # via -r requirements.in
 s3transfer==0.10.4
     # via boto3
 six==1.17.0
     # via
     #   promise
     #   python-dateutil
-sqlparse==0.5.2
+sqlparse==0.5.3
     # via django
 stack-data==0.6.3
     # via ipython
@@ -173,7 +181,9 @@ tzdata==2024.2
     #   kombu
     #   pendulum
 urllib3==2.2.3
-    # via botocore
+    # via
+    #   botocore
+    #   requests
 vine==5.1.0
     # via
     #   amqp

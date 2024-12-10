@@ -29,6 +29,9 @@ pendulum
 # GraphQL
 graphene-django
 
+# Requests
+requests
+
 # AWS
 boto3
 
