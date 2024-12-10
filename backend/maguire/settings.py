@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import json
-
+import sentry_sdk
 import dj_database_url
 from kombu import Exchange, Queue
 
@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd party
-    'raven.contrib.django.raven_compat',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
@@ -151,10 +150,10 @@ STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
 # Sentry configuration
-RAVEN_CONFIG = {
-    # DevOps will supply you with this.
-    'dsn': os.environ.get('MAGUIRE_SENTRY_DSN', None),
-}
+sentry_sdk.init(
+    dsn=os.environ.get('MAGUIRE_SENTRY_DSN', None),
+    environment=os.environ.get('ENVIRONMENT_NAME', 'DEVELOPMENT').lower()
+)
 
 # CORS Support
 CORS_ORIGIN_ALLOW_ALL = True

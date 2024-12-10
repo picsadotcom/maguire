@@ -20,8 +20,11 @@ celery==5.4.0
     # via
     #   -r requirements.in
     #   django-celery-beat
+    #   sentry-sdk
 certifi==2024.8.30
-    # via requests
+    # via
+    #   requests
+    #   sentry-sdk
 charset-normalizer==3.4.0
     # via requests
 click==8.1.7
@@ -59,6 +62,7 @@ django==4.2.17
     #   django-timezone-field
     #   djangorestframework
     #   graphene-django
+    #   sentry-sdk
 django-celery-beat==2.7.0
     # via -r requirements.in
 django-cors-headers==4.6.0
@@ -145,12 +149,12 @@ python-dateutil==2.9.0.post0
     #   pendulum
     #   python-crontab
     #   time-machine
-raven==6.10.0
-    # via -r requirements.in
 requests==2.32.3
     # via -r requirements.in
 s3transfer==0.10.4
     # via boto3
+sentry-sdk==2.19.2
+    # via -r requirements.in
 six==1.17.0
     # via
     #   promise
@@ -184,6 +188,7 @@ urllib3==2.2.3
     # via
     #   botocore
     #   requests
+    #   sentry-sdk
 vine==5.1.0
     # via
     #   amqp

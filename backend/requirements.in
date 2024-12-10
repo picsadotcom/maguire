@@ -16,7 +16,7 @@ dj-rest-auth
 psycopg[binary]
 
 # Sentry
-raven
+sentry-sdk[django,celery]
 
 # Celery
 celery
