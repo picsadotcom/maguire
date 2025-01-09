@@ -10,11 +10,11 @@ asttokens==3.0.0
     # via stack-data
 billiard==4.2.1
     # via celery
-boto3==1.35.77
+boto3==1.35.95
     # via
     #   -r requirements.in
     #   moto
-botocore==1.35.77
+botocore==1.35.95
     # via
     #   boto3
     #   moto
@@ -24,15 +24,15 @@ celery==5.4.0
     #   -r requirements.in
     #   django-celery-beat
     #   sentry-sdk
-certifi==2024.8.30
+certifi==2024.12.14
     # via
     #   requests
     #   sentry-sdk
 cffi==1.17.1
     # via cryptography
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
-click==8.1.7
+click==8.1.8
     # via
     #   celery
     #   click-didyoumean
@@ -44,7 +44,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-coverage==7.6.9
+coverage==7.6.10
     # via pytest-cov
 cron-descriptor==1.4.5
     # via django-celery-beat
@@ -54,7 +54,7 @@ decorator==5.1.1
     # via ipython
 dj-database-url==2.3.0
     # via -r requirements.in
-dj-rest-auth==7.0.0
+dj-rest-auth==7.0.1
     # via -r requirements.in
 django==4.2.17
     # via
@@ -121,11 +121,11 @@ idna==3.10
     # via requests
 iniconfig==2.0.0
     # via pytest
-ipython==8.30.0
+ipython==8.31.0
     # via -r requirements.in
 jedi==0.19.2
     # via ipython
-jinja2==3.1.4
+jinja2==3.1.5
     # via moto
 jmespath==1.0.1
     # via
@@ -141,7 +141,7 @@ matplotlib-inline==0.1.7
     # via ipython
 mccabe==0.7.0
     # via flake8
-moto==5.0.22
+moto==5.0.26
     # via -r requirements-dev.in
 packaging==24.2
     # via pytest
@@ -175,7 +175,7 @@ pycparser==2.22
     # via cffi
 pyflakes==3.2.0
     # via flake8
-pygments==2.18.0
+pygments==2.19.1
     # via ipython
 pytest==8.3.4
     # via
@@ -257,7 +257,7 @@ tzdata==2024.2
     #   django-celery-beat
     #   kombu
     #   pendulum
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   -r requirements-dev.in
     #   botocore
