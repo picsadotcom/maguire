@@ -10,11 +10,11 @@ asttokens==3.0.0
     # via stack-data
 billiard==4.2.1
     # via celery
-boto3==1.35.95
+boto3==1.35.98
     # via
     #   -r requirements.in
     #   moto
-botocore==1.35.95
+botocore==1.35.98
     # via
     #   boto3
     #   moto
@@ -86,7 +86,7 @@ django-role-permissions==3.2.0
     # via -r requirements.in
 django-storages==1.14.4
     # via -r requirements.in
-django-timezone-field==7.0
+django-timezone-field==7.1
     # via django-celery-beat
 djangorestframework==3.15.2
     # via
@@ -215,13 +215,13 @@ requests==2.32.3
     #   -r requirements.in
     #   moto
     #   responses
-responses==0.25.3
+responses==0.25.6
     # via
     #   -r requirements-dev.in
     #   moto
 s3transfer==0.10.4
     # via boto3
-sentry-sdk==2.19.2
+sentry-sdk==2.20.0
     # via -r requirements.in
 six==1.17.0
     # via
