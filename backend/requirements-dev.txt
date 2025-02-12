@@ -10,11 +10,11 @@ asttokens==3.0.0
     # via stack-data
 billiard==4.2.1
     # via celery
-boto3==1.35.98
+boto3==1.36.18
     # via
     #   -r requirements.in
     #   moto
-botocore==1.35.98
+botocore==1.36.18
     # via
     #   boto3
     #   moto
@@ -24,7 +24,7 @@ celery==5.4.0
     #   -r requirements.in
     #   django-celery-beat
     #   sentry-sdk
-certifi==2024.12.14
+certifi==2025.1.31
     # via
     #   requests
     #   sentry-sdk
@@ -44,11 +44,11 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-coverage==7.6.10
+coverage==7.6.12
     # via pytest-cov
 cron-descriptor==1.4.5
     # via django-celery-beat
-cryptography==44.0.0
+cryptography==44.0.1
     # via moto
 decorator==5.1.1
     # via ipython
@@ -56,7 +56,7 @@ dj-database-url==2.3.0
     # via -r requirements.in
 dj-rest-auth==7.0.1
     # via -r requirements.in
-django==4.2.17
+django==4.2.19
     # via
     #   -r requirements.in
     #   dj-database-url
@@ -74,7 +74,7 @@ django==4.2.17
     #   sentry-sdk
 django-celery-beat==2.7.0
     # via -r requirements.in
-django-cors-headers==4.6.0
+django-cors-headers==4.7.0
     # via -r requirements.in
 django-extensions==3.2.3
     # via -r requirements.in
@@ -98,7 +98,7 @@ exceptiongroup==1.2.2
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-executing==2.1.0
+executing==2.2.0
     # via stack-data
 flake8==7.1.1
     # via -r requirements-dev.in
@@ -108,7 +108,7 @@ graphene==3.4.3
     # via graphene-django
 graphene-django==3.2.2
     # via -r requirements.in
-graphql-core==3.2.5
+graphql-core==3.2.6
     # via
     #   graphene
     #   graphene-django
@@ -121,7 +121,7 @@ idna==3.10
     # via requests
 iniconfig==2.0.0
     # via pytest
-ipython==8.31.0
+ipython==8.32.0
     # via -r requirements.in
 jedi==0.19.2
     # via ipython
@@ -141,7 +141,7 @@ matplotlib-inline==0.1.7
     # via ipython
 mccabe==0.7.0
     # via flake8
-moto==5.0.26
+moto==5.0.28
     # via -r requirements-dev.in
 packaging==24.2
     # via pytest
@@ -157,13 +157,13 @@ pprintpp==0.4.0
     # via -r requirements.in
 promise==2.3
     # via graphene-django
-prompt-toolkit==3.0.48
+prompt-toolkit==3.0.50
     # via
     #   click-repl
     #   ipython
-psycopg==3.2.3
+psycopg==3.2.4
     # via -r requirements.in
-psycopg-binary==3.2.3
+psycopg-binary==3.2.4
     # via psycopg
 ptyprocess==0.7.0
     # via pexpect
@@ -187,7 +187,7 @@ pytest==8.3.4
     #   pytest-xdist
 pytest-cov==6.0.0
     # via -r requirements-dev.in
-pytest-django==4.9.0
+pytest-django==4.10.0
     # via -r requirements-dev.in
 pytest-env==1.1.5
     # via -r requirements-dev.in
@@ -219,7 +219,7 @@ responses==0.25.6
     # via
     #   -r requirements-dev.in
     #   moto
-s3transfer==0.10.4
+s3transfer==0.11.2
     # via boto3
 sentry-sdk==2.20.0
     # via -r requirements.in
@@ -251,7 +251,7 @@ typing-extensions==4.12.2
     #   graphene
     #   ipython
     #   psycopg
-tzdata==2024.2
+tzdata==2025.1
     # via
     #   celery
     #   django-celery-beat
