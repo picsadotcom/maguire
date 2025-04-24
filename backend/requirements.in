@@ -24,7 +24,6 @@ django-celery-beat
 
 # Date handling
 python-dateutil
-pendulum
 
 # GraphQL
 graphene-django

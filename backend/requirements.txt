@@ -116,8 +116,6 @@ matplotlib-inline==0.1.7
     # via ipython
 parso==0.8.4
     # via jedi
-pendulum==3.0.0
-    # via -r requirements.in
 pexpect==4.9.0
     # via ipython
 pprintpp==0.4.0
@@ -146,7 +144,6 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   graphene
-    #   pendulum
     #   python-crontab
 requests==2.32.3
     # via -r requirements.in
@@ -179,7 +176,6 @@ tzdata==2025.2
     # via
     #   django-celery-beat
     #   kombu
-    #   pendulum
 urllib3==2.4.0
     # via
     #   botocore
