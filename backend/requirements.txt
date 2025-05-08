@@ -47,7 +47,7 @@ dj-database-url==2.3.0
     # via -r requirements.in
 dj-rest-auth==7.0.1
     # via -r requirements.in
-django==4.2.20
+django==4.2.21
     # via
     #   -r requirements.in
     #   dj-database-url
@@ -102,7 +102,7 @@ graphql-relay==3.2.0
     #   graphene-django
 idna==3.10
     # via requests
-ipython==8.35.0
+ipython==8.18.1
     # via -r requirements.in
 jedi==0.19.2
     # via ipython
@@ -126,7 +126,7 @@ prompt-toolkit==3.0.51
     # via
     #   click-repl
     #   ipython
-psycopg==3.2.6
+psycopg[binary]==3.2.6
     # via -r requirements.in
 psycopg-binary==3.2.6
     # via psycopg
@@ -149,7 +149,7 @@ requests==2.32.3
     # via -r requirements.in
 s3transfer==0.12.0
     # via boto3
-sentry-sdk==2.26.1
+sentry-sdk[celery,django]==2.26.1
     # via -r requirements.in
 six==1.17.0
     # via
@@ -170,13 +170,15 @@ typing-extensions==4.13.2
     #   asgiref
     #   dj-database-url
     #   graphene
+    #   graphql-core
     #   ipython
     #   psycopg
 tzdata==2025.2
     # via
+    #   celery
     #   django-celery-beat
     #   kombu
-urllib3==2.4.0
+urllib3==1.26.20
     # via
     #   botocore
     #   requests
