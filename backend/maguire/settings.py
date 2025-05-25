@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rolepermissions',
     'django_celery_beat',
     'django_extensions',
+    'import_export',
     # us
     'credits',
     'debits',

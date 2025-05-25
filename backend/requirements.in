@@ -6,6 +6,7 @@ Django<5
 django-cors-headers
 django-filter
 django-extensions
+django-import-export
 django-reversion
 django-role-permissions
 django-storages

@@ -1,10 +1,11 @@
 from django.contrib import admin
-from reversion.admin import VersionAdmin
-from .models import Debit
+from import_export.admin import ExportMixin
+
+from debits.models import Debit
 
 
 @admin.register(Debit)
-class DebitAdmin(VersionAdmin):
+class DebitAdmin(ExportMixin, admin.ModelAdmin):
     list_display = [
         "id", "client", "status", "downstream_reference", "reference", "load_attempts",
         "scheduled_at", "loaded_at", "created_at", "updated_at",
